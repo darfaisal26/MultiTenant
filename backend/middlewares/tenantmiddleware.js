@@ -13,12 +13,7 @@ module.exports = async function tenantDbMiddleware(req, res, next) {
 
     if (!connectionMap[tenantId]) {
       const dbUri = `mongodb://127.0.0.1:27017/${tenantId}`;
-      // const connection = await mongoose.createConnection(dbUri, {
-      //   useNewUrlParser: true,
-      //   useUnifiedTopology: true,
-      // });
       const connection = await mongoose.createConnection(dbUri);
-
       console.log(`Connected to DB for tenant: ${tenantId}`);
       connectionMap[tenantId] = connection;
     }
@@ -28,7 +23,7 @@ module.exports = async function tenantDbMiddleware(req, res, next) {
 
     next();
   } catch (error) {
-    console.error('Tenant DB connection error:', error);
+    // console.error('Tenant DB connection error:', error);
     res.status(500).json({ message: 'Error connecting to tenant DB' });
   }
 };
