@@ -3,303 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles/index.css">
     <title>Multi-Tenant Auth</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        color: #333;
-        line-height: 1.6;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 40px;
-        color: white;
-      }
-
-      .header h1 {
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-      }
-
-      .header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 25px;
-        margin-bottom: 30px;
-      }
-
-      .card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        padding: 30px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-      }
-
-      .card h2 {
-        color: #4a5568;
-        margin-bottom: 20px;
-        font-size: 1.5rem;
-        text-align: center;
-        position: relative;
-      }
-
-      .card h2::after {
-        content: '';
-        position: absolute;
-        bottom: -8px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 40px;
-        height: 3px;
-        background: linear-gradient(90deg, #667eea, #764ba2);
-        border-radius: 2px;
-      }
-
-      .form-group {
-        margin-bottom: 20px;
-      }
-
-      .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        color: #4a5568;
-        font-weight: 500;
-      }
-
-      input[type="email"],
-      input[type="password"],
-      input[type="text"] {
-        width: 100%;
-        padding: 12px 16px;
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 16px;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        background: white;
-      }
-
-      input[type="email"]:focus,
-      input[type="password"]:focus,
-      input[type="text"]:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-      }
-
-      .btn {
-        width: 100%;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      }
-
-      .btn-secondary {
-        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-        color: white;
-      }
-
-      .btn-secondary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
-      }
-
-      .btn-danger {
-        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-        color: white;
-      }
-
-      .btn-danger:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(245, 101, 101, 0.4);
-      }
-
-      .notes-section {
-        grid-column: 1 / -1;
-      }
-
-      .notes-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 15px;
-      }
-
-      .notes-list {
-        list-style: none;
-        max-height: 400px;
-        overflow-y: auto;
-      }
-
-      .note-item {
-        background: #f7fafc;
-        padding: 15px;
-        margin-bottom: 10px;
-        border-radius: 8px;
-        border-left: 4px solid #667eea;
-        transition: all 0.3s ease;
-      }
-
-      .note-item:hover {
-        background: #edf2f7;
-        transform: translateX(5px);
-      }
-
-      .note-title {
-        font-weight: 600;
-        color: #2d3748;
-        margin-bottom: 5px;
-      }
-
-      .note-content {
-        color: #4a5568;
-        font-size: 0.9rem;
-      }
-
-      .empty-state {
-        text-align: center;
-        padding: 40px;
-        color: #718096;
-      }
-
-      .empty-state svg {
-        width: 64px;
-        height: 64px;
-        margin-bottom: 16px;
-        opacity: 0.5;
-      }
-
-      .status-indicator {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 10px 20px;
-        border-radius: 8px;
-        color: white;
-        font-weight: 500;
-        opacity: 0;
-        transform: translateY(-20px);
-        transition: all 0.3s ease;
-        z-index: 1000;
-      }
-
-      .status-indicator.show {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .status-success {
-        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-      }
-
-      .status-error {
-        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-      }
-
-      .status-info {
-        background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-      }
-
-      @media (max-width: 768px) {
-        .container {
-          padding: 15px;
-        }
-
-        .header h1 {
-          font-size: 2rem;
-        }
-
-        .grid {
-          grid-template-columns: 1fr;
-          gap: 20px;
-        }
-
-        .card {
-          padding: 20px;
-        }
-
-        .notes-header {
-          flex-direction: column;
-          align-items: stretch;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .header h1 {
-          font-size: 1.5rem;
-        }
-
-        .card {
-          padding: 15px;
-        }
-      }
-
-      .loading {
-        opacity: 0.6;
-        pointer-events: none;
-      }
-
-      .spinner {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid #ffffff;
-        border-radius: 50%;
-        border-top-color: transparent;
-        animation: spin 1s ease-in-out infinite;
-        margin-left: 8px;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-    </style>
+    
   </head>
   <body>
     <div class="container">
@@ -308,91 +14,117 @@
         <p>Secure authentication and note management system</p>
       </div>
 
-      <div class="grid">
-        <!-- Register Card -->
-        <div class="card">
-          <h2>Create Account</h2>
-          <form id="register-form">
-            <div class="form-group">
-              <label for="register-email">Email Address</label>
-              <input id="register-email" name="email" type="email" placeholder="Enter your email" required />
-            </div>
-            <div class="form-group">
-              <label for="register-password">Password</label>
-              <input id="register-password" name="password" type="password" placeholder="Create a password" required />
-            </div>
-            <button type="submit" class="btn btn-primary">
-              Register
-              <span class="spinner" style="display: none;"></span>
-            </button>
-          </form>
-        </div>
-
-        <!-- Login Card -->
-        <div class="card">
-          <h2>Sign In</h2>
-          <form id="login-form">
-            <div class="form-group">
-              <label for="login-email">Email Address</label>
-              <input id="login-email" name="email" type="email" placeholder="Enter your email" required />
-            </div>
-            <div class="form-group">
-              <label for="login-password">Password</label>
-              <input id="login-password" name="password" type="password" placeholder="Enter your password" required />
-            </div>
-            <button type="submit" class="btn btn-primary">
-              Sign In
-              <span class="spinner" style="display: none;"></span>
-            </button>
-          </form>
-        </div>
-
-        <!-- Create Note Card -->
-        <div class="card">
-          <h2>Create Note</h2>
-          <form id="note-form">
-            <div class="form-group">
-              <label for="note-title">Title</label>
-              <input id="note-title" name="title" type="text" placeholder="Enter note title" required />
-            </div>
-            <div class="form-group">
-              <label for="note-content">Content</label>
-              <input id="note-content" name="content" type="text" placeholder="Enter note content" required />
-            </div>
-            <button type="submit" class="btn btn-secondary">
-              Save Note
-              <span class="spinner" style="display: none;"></span>
-            </button>
-          </form>
-        </div>
-
-        <!-- Notes Section -->
-        <div class="card notes-section">
-          <div class="notes-header">
-            <h2>Your Notes</h2>
-            <button id="fetch-notes-btn" class="btn btn-secondary" style="width: auto; padding: 8px 16px;">
-              Load Notes
-              <span class="spinner" style="display: none;"></span>
-            </button>
+      <!-- Login Page -->
+      <div id="login-page" class="page active">
+        <div class="auth-container">
+          <div class="auth-card">
+            <h2>Welcome Back</h2>
+            <form id="login-form">
+              <div class="form-group">
+                <label for="login-email">Email Address</label>
+                <input id="login-email" name="email" type="email" placeholder="Enter your email" required />
+              </div>
+              <div class="form-group">
+                <label for="login-password">Password</label>
+                <div class="password-input">
+                  <input id="login-password" name="password" type="password" placeholder="Enter your password" required />
+                  <button type="button" class="password-toggle" onclick="togglePassword('login-password')">👁️</button>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Sign In
+                <span class="spinner" style="display: none;"></span>
+              </button>
+              <button type="button" class="btn btn-link" onclick="showPage('register-page')">
+                Don't have an account? Register here
+              </button>
+            </form>
           </div>
-          <ul id="notes-list" class="notes-list">
-            <div class="empty-state">
-              <svg fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
-              </svg>
-              <p>No notes yet. Create your first note!</p>
-            </div>
-          </ul>
         </div>
+      </div>
 
-        <!-- Logout Card -->
-        <div class="card">
-          <h2>Account</h2>
-          <button id="logout-btn" class="btn btn-danger">
+      <!-- Registration Page -->
+      <div id="register-page" class="page">
+        <div class="auth-container">
+          <div class="auth-card">
+            <h2>Create Account</h2>
+            <form id="register-form">
+              <div class="form-group">
+                <label for="register-email">Email Address</label>
+                <input id="register-email" name="email" type="email" placeholder="Enter your email" required />
+              </div>
+              <div class="form-group">
+                <label for="register-password">Password</label>
+                <div class="password-input">
+                  <input id="register-password" name="password" type="password" placeholder="Create a password" required />
+                  <button type="button" class="password-toggle" onclick="togglePassword('register-password')">👁️</button>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Create Account
+                <span class="spinner" style="display: none;"></span>
+              </button>
+              <button type="button" class="btn btn-link" onclick="showPage('login-page')">
+                Already have an account? Sign in here
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Page -->
+      <div id="dashboard-page" class="page">
+        <div class="dashboard-header">
+          <div class="user-info">
+            <h2>Welcome to Your Dashboard</h2>
+            <p>Manage your notes and account</p>
+          </div>
+          <button id="logout-btn" class="btn btn-danger" style="width: auto; padding: 8px 16px;">
             Sign Out
             <span class="spinner" style="display: none;"></span>
           </button>
+        </div>
+
+        <div class="grid">
+          <!-- Create Note Card -->
+          <div class="card">
+            <h2>Create New Note</h2>
+            <form id="note-form">
+              <div class="form-group">
+                <label for="note-title">Title</label>
+                <input id="note-title" name="title" type="text" placeholder="Enter note title" required />
+              </div>
+              <div class="form-group">
+                <label for="note-content">Content</label>
+                <textarea id="note-content" name="content" placeholder="Enter note content" required rows="4" style="width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; transition: border-color 0.3s ease, box-shadow 0.3s ease; background: white; resize: vertical; font-family: inherit;"></textarea>
+              </div>
+              <button type="submit" class="btn btn-secondary">
+                Save Note
+                <span class="spinner" style="display: none;"></span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Notes Section -->
+          <div class="card notes-section">
+            <div class="notes-header">
+              <h2>Your Notes</h2>
+              <button id="fetch-notes-btn" class="btn btn-secondary" style="width: auto; padding: 8px 16px;">
+                Refresh Notes
+                <span class="spinner" style="display: none;"></span>
+              </button>
+            </div>
+            <div id="notes-container">
+              <div class="empty-state">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                  <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                </svg>
+                <h3>No notes yet</h3>
+                <p>Create your first note to get started!</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -401,6 +133,38 @@
 
     <script>
       const tenantBaseURL = window.location.origin;
+      let currentUser = null;
+
+      // Initialize app
+      document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('token');
+        if (token) {
+          showPage('dashboard-page');
+          loadNotes();
+        } else {
+          showPage('login-page');
+        }
+      });
+
+      function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => {
+          page.classList.remove('active');
+        });
+        document.getElementById(pageId).classList.add('active');
+      }
+
+      function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const button = input.nextElementSibling;
+        
+        if (input.type === 'password') {
+          input.type = 'text';
+          button.textContent = '🙈';
+        } else {
+          input.type = 'password';
+          button.textContent = '👁️';
+        }
+      }
 
       function showStatus(message, type = 'info') {
         const indicator = document.getElementById('status-indicator');
@@ -409,7 +173,7 @@
         
         setTimeout(() => {
           indicator.classList.remove('show');
-        }, 3000);
+        }, 4000);
       }
 
       function setLoading(form, isLoading) {
@@ -425,6 +189,68 @@
         }
       }
 
+      async function loadNotes() {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+          const res = await fetch(`${tenantBaseURL}/api/data`, {
+            method: "GET",
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          });
+
+          const notes = await res.json();
+          displayNotes(notes);
+        } catch (error) {
+          console.error('Failed to load notes:', error);
+        }
+      }
+
+      function displayNotes(notes) {
+        const container = document.getElementById("notes-container");
+        
+        if (notes.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <svg fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+              </svg>
+              <h3>No notes yet</h3>
+              <p>Create your first note to get started!</p>
+            </div>
+          `;
+        } else {
+          const notesGrid = document.createElement('div');
+          notesGrid.className = 'notes-grid';
+          
+          notes.forEach((note, index) => {
+            const noteCard = document.createElement('div');
+            noteCard.className = 'note-card';
+            noteCard.innerHTML = `
+              <div class="note-title">${escapeHtml(note.title)}</div>
+              <div class="note-content">${escapeHtml(note.content)}</div>
+              <div class="note-meta">
+                Note #${index + 1} • ${new Date().toLocaleDateString()}
+              </div>
+            `;
+            notesGrid.appendChild(noteCard);
+          });
+          
+          container.innerHTML = '';
+          container.appendChild(notesGrid);
+        }
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Event Listeners
       document
         .getElementById("register-form")
         .addEventListener("submit", async (e) => {
@@ -446,6 +272,11 @@
             const result = await res.json();
             showStatus(result.message || "Registration successful!", "success");
             e.target.reset();
+            
+            // Auto redirect to login after successful registration
+            setTimeout(() => {
+              showPage('login-page');
+            }, 1500);
           } catch (error) {
             showStatus("Registration failed. Please try again.", "error");
           } finally {
@@ -475,8 +306,15 @@
             
             if (result.token) {
               localStorage.setItem("token", result.token);
+              currentUser = data.get("email");
               showStatus("Login successful!", "success");
               e.target.reset();
+              
+              // Redirect to dashboard
+              setTimeout(() => {
+                showPage('dashboard-page');
+                loadNotes();
+              }, 1000);
             } else {
               showStatus(result.message || "Login failed", "error");
             }
@@ -496,7 +334,7 @@
             return;
           }
           
-          setLoading(e.target.closest('.card'), true);
+          setLoading(e.target.closest('.dashboard-header'), true);
           
           try {
             const res = await fetch(`${tenantBaseURL}/api/auth/logout`, {
@@ -508,22 +346,16 @@
             const result = await res.json();
             showStatus(result.message || "Logout successful", "success");
             localStorage.removeItem("token");
+            currentUser = null;
             
-            // Clear notes list
-            const notesList = document.getElementById("notes-list");
-            notesList.innerHTML = `
-              <div class="empty-state">
-                <svg fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                  <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
-                </svg>
-                <p>No notes yet. Create your first note!</p>
-              </div>
-            `;
+            // Redirect to login
+            setTimeout(() => {
+              showPage('login-page');
+            }, 1000);
           } catch (error) {
             showStatus("Logout failed. Please try again.", "error");
           } finally {
-            setLoading(e.target.closest('.card'), false);
+            setLoading(e.target.closest('.dashboard-header'), false);
           }
         });
 
@@ -534,6 +366,7 @@
           const token = localStorage.getItem("token");
           if (!token) {
             showStatus("You must login first", "error");
+            showPage('login-page');
             return;
           }
 
@@ -558,6 +391,9 @@
             const result = await res.json();
             showStatus(result.message || "Note saved successfully!", "success");
             e.target.reset();
+            
+            // Refresh notes
+            loadNotes();
           } catch (error) {
             showStatus("Failed to save note. Please try again.", "error");
           } finally {
@@ -571,6 +407,7 @@
           const token = localStorage.getItem("token");
           if (!token) {
             showStatus("You must login first", "error");
+            showPage('login-page');
             return;
           }
 
@@ -585,31 +422,7 @@
             });
 
             const notes = await res.json();
-            const list = document.getElementById("notes-list");
-            
-            if (notes.length === 0) {
-              list.innerHTML = `
-                <div class="empty-state">
-                  <svg fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
-                  </svg>
-                  <p>No notes yet. Create your first note!</p>
-                </div>
-              `;
-            } else {
-              list.innerHTML = "";
-              notes.forEach((note) => {
-                const li = document.createElement("li");
-                li.className = "note-item";
-                li.innerHTML = `
-                  <div class="note-title">${note.title}</div>
-                  <div class="note-content">${note.content}</div>
-                `;
-                list.appendChild(li);
-              });
-            }
-            
+            displayNotes(notes);
             showStatus(`Loaded ${notes.length} notes`, "success");
           } catch (error) {
             showStatus("Failed to load notes. Please try again.", "error");

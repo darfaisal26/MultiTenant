@@ -1,14 +1,14 @@
-const NoteModelFactory = require('../models/datamodel');
+
+
+const noteService = require('../services/dataServices');
 
 exports.createNote = async (req, res) => {
   try {
-    const Note = NoteModelFactory(req.db);
-    const note = new Note({
+    const note = await noteService.createNote(req.db, {
       title: req.body.title,
       content: req.body.content,
       createdBy: req.user.userId,
     });
-    await note.save();
     res.status(201).json({ message: 'Note created', note });
   } catch (err) {
     console.error(err);
@@ -18,8 +18,7 @@ exports.createNote = async (req, res) => {
 
 exports.getNotes = async (req, res) => {
   try {
-    const Note = NoteModelFactory(req.db);
-    const notes = await Note.find({ createdBy: req.user.userId });
+    const notes = await noteService.getNotes(req.db, req.user.userId);
     res.json(notes);
   } catch (err) {
     console.error(err);
