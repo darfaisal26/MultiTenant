@@ -6,11 +6,9 @@ module.exports = async function (req, res, next) {
   if (!authHeader) return res.status(401).json({ message: 'No token' });
 
   const token = authHeader.split(' ')[1];
-  // console.log(token, "token in middleare");
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log(decoded, "decoded");
 
     if (decoded.tenantId !== req.tenantId) {
       return res.status(403).json({ message: "Tenant mismatch" });
@@ -25,7 +23,6 @@ module.exports = async function (req, res, next) {
     req.user = decoded;
     next();
   } catch (err) {
-    // console.log(err, "errin middlware catch");
     return res
       .status(401)
       .json({ message: "Invalid token", error: err.message });

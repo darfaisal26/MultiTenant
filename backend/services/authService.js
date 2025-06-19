@@ -1,7 +1,7 @@
 
 const bcrypt = require('bcryptjs');
 const UserModelFactory = require('../models/userModel');
-const { createToken } = require('../utils/createToken'); 
+const  createToken  = require('../utils/createToken'); 
 
 exports.registerUser = async (db, { email, password }) => {
   const User = UserModelFactory(db);

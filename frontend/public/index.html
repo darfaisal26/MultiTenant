@@ -303,6 +303,7 @@
               body: JSON.stringify(body),
             });
             const result = await res.json();
+            // console.log(result,'nnnnnn')
             
             if (result.token) {
               localStorage.setItem("token", result.token);
@@ -316,7 +317,8 @@
                 loadNotes();
               }, 1000);
             } else {
-              showStatus(result.message || "Login failed", "error");
+              // console.log(result,'below')
+              showStatus(result.error || "Login failed", "error");
             }
           } catch (error) {
             showStatus("Login failed. Please try again.", "error");
